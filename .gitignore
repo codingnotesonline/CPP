@@ -1,0 +1,10 @@
+*.exe
+Binary-Search-Tree/*.exe
+BinaryTree/*.exe
+Graph/*.exe
+Heaps/*.exe
+Linked-List/*.exe
+Operator-Overloading/*.exe
+Other/*.exe
+Practice-Questions/*.exe
+Trie/*.exe
