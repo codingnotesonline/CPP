@@ -1,39 +1,48 @@
-#include "Queue_BinaryTree.cpp"
+#include "../BinaryTree/Queue_BinaryTree.cpp"
 #include <algorithm>
 #include <iostream>
 #include <vector>
 using namespace std;
 
-template <typename DataType> class TreeNode {
+template <typename DataType>
+class TreeNode
+{
 public:
   DataType value;
   TreeNode<DataType> *left;
   TreeNode<DataType> *right;
 
-  TreeNode() {
+  TreeNode()
+  {
     this->left = NULL;
     this->right = NULL;
   }
 
-  TreeNode(DataType value) {
+  TreeNode(DataType value)
+  {
     this->value = value;
     this->left = NULL;
     this->right = NULL;
   }
 
-  ~TreeNode() {
+  ~TreeNode()
+  {
     this->left = NULL;
     this->right = NULL;
   }
 };
 
-template <typename DataType> class BinarySearchTree {
+template <typename DataType>
+class BinarySearchTree
+{
 private:
   TreeNode<DataType> *root;
 
   void GenerateTree(TreeNode<DataType> *&root, int *levelNodeCount, int height,
-                    int levelCount = 0) {
-    if (levelCount == height) {
+                    int levelCount = 0)
+  {
+    if (levelCount == height)
+    {
       return;
     }
 
@@ -48,7 +57,8 @@ private:
     cout << "Enter your Choice here: ";
     cin >> choice;
 
-    if (choice == 1) {
+    if (choice == 1)
+    {
       DataType value;
       cout << endl;
       cout << "Enter Data here: ";
@@ -58,14 +68,18 @@ private:
 
       this->GenerateTree(root->left, levelNodeCount, height, levelCount + 1);
       this->GenerateTree(root->right, levelNodeCount, height, levelCount + 1);
-    } else {
+    }
+    else
+    {
       return;
     }
   }
 
   void GetPreOrderTree(TreeNode<DataType> *root,
-                       vector<TreeNode<DataType> *> *&container) {
-    if (root == NULL) {
+                       vector<TreeNode<DataType> *> *&container)
+  {
+    if (root == NULL)
+    {
       return;
     }
 
@@ -74,20 +88,24 @@ private:
     this->GetPreOrderTree(root->right, container);
   }
 
-  void DeleteTree() {
+  void DeleteTree()
+  {
     vector<TreeNode<DataType> *> *container =
         new vector<TreeNode<DataType> *>();
     this->GetPreOrderTree(this->root, container);
 
-    for (int i = 0; i < container->size(); i++) {
+    for (int i = 0; i < container->size(); i++)
+    {
       delete container->at(i);
     }
 
     delete container;
   }
 
-  void GetInOrder(TreeNode<DataType> *root, vector<DataType> *&result) {
-    if (root == NULL) {
+  void GetInOrder(TreeNode<DataType> *root, vector<DataType> *&result)
+  {
+    if (root == NULL)
+    {
       return;
     }
 
@@ -97,8 +115,10 @@ private:
   }
 
   TreeNode<DataType> *BuildBST(vector<DataType> *result, int end,
-                               int start = 0) {
-    if (start > end) {
+                               int start = 0)
+  {
+    if (start > end)
+    {
       return NULL;
     }
 
@@ -111,7 +131,8 @@ private:
     return root;
   }
 
-  void MakeBST(TreeNode<DataType> *root) {
+  void MakeBST(TreeNode<DataType> *root)
+  {
     vector<DataType> *result = new vector<DataType>();
     this->GetInOrder(this->root, result);
 
@@ -124,8 +145,10 @@ private:
     delete result;
   }
 
-  bool CheckBST(TreeNode<DataType> *root) {
-    if (root == NULL) {
+  bool CheckBST(TreeNode<DataType> *root)
+  {
+    if (root == NULL)
+    {
       return true;
     }
 
@@ -134,23 +157,30 @@ private:
     left = this->CheckBST(root->left);
     right = this->CheckBST(root->right);
 
-    if (root->left != NULL) {
+    if (root->left != NULL)
+    {
       leftCheck = (root->left->value <= root->value);
     }
 
-    if (root->right != NULL) {
+    if (root->right != NULL)
+    {
       rightCheck = (root->right->value >= root->value);
     }
 
-    if (left && right && leftCheck && rightCheck) {
+    if (left && right && leftCheck && rightCheck)
+    {
       return true;
-    } else {
+    }
+    else
+    {
       return false;
     }
   }
 
-  void PreOrder(TreeNode<DataType> *root) {
-    if (root == NULL) {
+  void PreOrder(TreeNode<DataType> *root)
+  {
+    if (root == NULL)
+    {
       return;
     }
 
@@ -159,8 +189,10 @@ private:
     this->PreOrder(root->right);
   }
 
-  void InOrder(TreeNode<DataType> *root) {
-    if (root == NULL) {
+  void InOrder(TreeNode<DataType> *root)
+  {
+    if (root == NULL)
+    {
       return;
     }
 
@@ -169,8 +201,10 @@ private:
     this->InOrder(root->right);
   }
 
-  void PostOrder(TreeNode<DataType> *root) {
-    if (root == NULL) {
+  void PostOrder(TreeNode<DataType> *root)
+  {
+    if (root == NULL)
+    {
       return;
     }
 
@@ -179,8 +213,10 @@ private:
     cout << root->value << " ";
   }
 
-  void LevelOrder(TreeNode<DataType> *root) {
-    if (root == NULL) {
+  void LevelOrder(TreeNode<DataType> *root)
+  {
+    if (root == NULL)
+    {
       return;
     }
 
@@ -189,23 +225,30 @@ private:
     container->push(NULL);
 
     TreeNode<DataType> *element = NULL;
-    while (!container->empty()) {
+    while (!container->empty())
+    {
       element = container->front();
       container->pop();
 
-      if (element == NULL) {
+      if (element == NULL)
+      {
         cout << endl;
-        if (!container->empty()) {
+        if (!container->empty())
+        {
           container->push(NULL);
         }
-      } else {
+      }
+      else
+      {
         cout << element->value << " ";
 
-        if (element->left != NULL) {
+        if (element->left != NULL)
+        {
           container->push(element->left);
         }
 
-        if (element->right != NULL) {
+        if (element->right != NULL)
+        {
           container->push(element->right);
         }
       }
@@ -214,27 +257,37 @@ private:
     delete container;
   }
 
-  void MorrisPreOrder(TreeNode<DataType> *root) {
-    if (root == NULL) {
+  void MorrisPreOrder(TreeNode<DataType> *root)
+  {
+    if (root == NULL)
+    {
       return;
     }
 
     TreeNode<DataType> *predecessor = NULL;
-    while (root != NULL) {
-      if (root->left == NULL) {
+    while (root != NULL)
+    {
+      if (root->left == NULL)
+      {
         cout << root->value << " ";
         root = root->right;
-      } else {
+      }
+      else
+      {
         predecessor = root->left;
-        while (predecessor->right != NULL && predecessor->right != root) {
+        while (predecessor->right != NULL && predecessor->right != root)
+        {
           predecessor = predecessor->right;
         }
 
-        if (predecessor->right == NULL) {
+        if (predecessor->right == NULL)
+        {
           predecessor->right = root;
           cout << root->value << " ";
           root = root->left;
-        } else {
+        }
+        else
+        {
           predecessor->right = NULL;
           root = root->right;
         }
@@ -242,26 +295,36 @@ private:
     }
   }
 
-  void MorrisInOrder(TreeNode<DataType> *root) {
-    if (root == NULL) {
+  void MorrisInOrder(TreeNode<DataType> *root)
+  {
+    if (root == NULL)
+    {
       return;
     }
 
     TreeNode<DataType> *predecessor = NULL;
-    while (root != NULL) {
-      if (root->left == NULL) {
+    while (root != NULL)
+    {
+      if (root->left == NULL)
+      {
         cout << root->value << " ";
         root = root->right;
-      } else {
+      }
+      else
+      {
         predecessor = root->left;
-        while (predecessor->right != NULL && predecessor->right != root) {
+        while (predecessor->right != NULL && predecessor->right != root)
+        {
           predecessor = predecessor->right;
         }
 
-        if (predecessor->right == NULL) {
+        if (predecessor->right == NULL)
+        {
           predecessor->right = root;
           root = root->left;
-        } else {
+        }
+        else
+        {
           predecessor->right = NULL;
           cout << root->value << " ";
           root = root->right;
@@ -271,26 +334,36 @@ private:
   }
 
   void MorrisPostOrder(
-      TreeNode<DataType> *root) { // fix this, its not working properly
-    if (root == NULL) {
+      TreeNode<DataType> *root)
+  { // fix this, its not working properly
+    if (root == NULL)
+    {
       return;
     }
 
     TreeNode<DataType> *copy = root;
     TreeNode<DataType> *predecessor = NULL;
-    while (root != NULL) {
-      if (root->left == NULL) {
+    while (root != NULL)
+    {
+      if (root->left == NULL)
+      {
         root = root->right;
-      } else {
+      }
+      else
+      {
         predecessor = root->left;
-        while (predecessor->right != NULL && predecessor->right != root) {
+        while (predecessor->right != NULL && predecessor->right != root)
+        {
           predecessor = predecessor->right;
         }
 
-        if (predecessor->right == NULL) {
+        if (predecessor->right == NULL)
+        {
           predecessor->right = root;
           root = root->left;
-        } else {
+        }
+        else
+        {
           cout << predecessor->value << " ";
           TreeNode<DataType> *temp = NULL;
         }
@@ -321,12 +394,96 @@ private:
     }
   }
 
+  DataType FindMaximumFromLeft(TreeNode<DataType> *root)
+  {
+    if (root->right == NULL)
+    {
+      return root->value;
+    }
+
+    return this->FindMaximumFromLeft(root->right);
+  }
+
+  TreeNode<DataType> *DeleteNode(TreeNode<DataType> *root, DataType value)
+  {
+    if (root == NULL)
+    {
+      return NULL;
+    }
+
+    if (root->value == value)
+    {
+      if (root->left == NULL && root->right == NULL)
+      {
+        delete root;
+        return NULL;
+      }
+      else if (root->left != NULL && root->right == NULL)
+      {
+        TreeNode<DataType> *left = root->left;
+        delete root;
+        return left;
+      }
+      else if (root->left == NULL && root->right != NULL)
+      {
+        TreeNode<DataType> *right = root->right;
+        delete root;
+        return right;
+      }
+      else
+      {
+        // here find maximum from left subtree or minimum from right subtree
+        root->value = this->FindMaximumFromLeft(root->left);
+        root->left = this->DeleteNode(root->left, root->value);
+        return root;
+      }
+    }
+    else if (root->value > value)
+    {
+      root->left = this->DeleteNode(root->left, value);
+      return root;
+    }
+    else
+    {
+      root->right = this->DeleteNode(root->right, value);
+      return root;
+    }
+  }
+
+  TreeNode<DataType> *SearchNode(TreeNode<DataType> *root, DataType value)
+  {
+    if (root == NULL)
+    {
+      return NULL;
+    }
+
+    if (root->value == value)
+    {
+      return root;
+    }
+    else if (root->value > value)
+    {
+      root = this->SearchNode(root->left, value);
+    }
+    else
+    {
+      root = this->SearchNode(root->right, value);
+    }
+
+    return root;
+  }
+
 public:
   BinarySearchTree() { this->root = NULL; }
 
-  ~BinarySearchTree() { this->root = NULL; }
+  ~BinarySearchTree()
+  {
+    this->DeleteTree();
+    this->root = NULL;
+  }
 
-  void GenerateBinaryTree() {
+  void GenerateBinaryTree()
+  {
     int height = 0;
 
     cout << "Enter the Height of Binary Tree: " << endl;
@@ -334,7 +491,8 @@ public:
 
     int *levelNodeCount = new int[height];
 
-    for (int i = 0; i < height; i++) {
+    for (int i = 0; i < height; i++)
+    {
       levelNodeCount[i] = 0;
     }
 
@@ -343,7 +501,8 @@ public:
     delete[] levelNodeCount;
   }
 
-  void GenerateBinarySearchTree() {
+  void GenerateBinarySearchTree()
+  {
     int height = 0;
 
     cout << "Enter the Height of Binary Search Tree: " << endl;
@@ -351,7 +510,8 @@ public:
 
     int *levelNodeCount = new int[height];
 
-    for (int i = 0; i < height; i++) {
+    for (int i = 0; i < height; i++)
+    {
       levelNodeCount[i] = 0;
     }
 
@@ -362,13 +522,20 @@ public:
     delete[] levelNodeCount;
   }
 
-  void insert(DataType value)
+  void InsertData(DataType value)
   {
     this->InsertNode(this->root, value);
   }
 
-  int BinaryTreeHeight(TreeNode<DataType> *root) {
-    if (root == NULL) {
+  void DeleteData(DataType value)
+  {
+    this->root = this->DeleteNode(this->root, value);
+  }
+
+  int BinaryTreeHeight(TreeNode<DataType> *root)
+  {
+    if (root == NULL)
+    {
       return 0;
     }
 
@@ -378,30 +545,58 @@ public:
     return max(left, right) + 1;
   }
 
-  void MakeTreeBST() {
-    if (root == NULL) {
+  void MakeTreeBST()
+  {
+    if (root == NULL)
+    {
       return;
     }
 
-    if (root->left == NULL && root->right == NULL) {
+    if (root->left == NULL && root->right == NULL)
+    {
       return;
     }
 
-    if (!(this->CheckTreeBST())) {
+    if (!(this->CheckTreeBST()))
+    {
       this->MakeBST(this->root);
     }
   }
 
-  bool CheckTreeBST() {
-    if (root == NULL) {
+  bool CheckTreeBST()
+  {
+    if (root == NULL)
+    {
       return true;
     }
 
-    if (root->left == NULL && root->right == NULL) {
+    if (root->left == NULL && root->right == NULL)
+    {
       return true;
     }
 
     return this->CheckBST(this->root);
+  }
+
+  bool SearchData(DataType value)
+  {
+    TreeNode<DataType> *founded = this->SearchNode(this->root, value);
+    if (founded == NULL)
+    {
+      return false;
+    }
+
+    return true;
+  }
+
+  void clear()
+  {
+    if (this->root == NULL)
+    {
+      return;
+    }
+
+    this->DeleteTree();
   }
 
   TreeNode<DataType> *ReturnRoot() { return this->root; }
@@ -418,7 +613,8 @@ public:
 
   void MorrisInOrderTraversal() { this->MorrisInOrder(this->root); }
 
-  void MorrisPostOrderTraversal() {
+  void MorrisPostOrderTraversal()
+  {
     // also fix this and write code for it
   }
 };

@@ -1,4 +1,4 @@
-#include "Queue_BinaryTree.cpp"
+#include "../BinaryTree/Queue_BinaryTree.cpp"
 #include <algorithm>
 #include <iostream>
 #include <vector>
@@ -119,15 +119,15 @@ private:
     this->GetInOrder(root->right, result);
   }
 
-  int CalulateHeight(TreeNode<DataType> *&root)
+  int CalculateHeight(TreeNode<DataType> *&root)
   {
     if (root == NULL)
     {
       return 0;
     }
 
-    int left = this->CalulateHeight(root->left);
-    int right = this->CalulateHeight(root->right);
+    int left = this->CalculateHeight(root->left);
+    int right = this->CalculateHeight(root->right);
 
     root->height = max(left, right) + 1;
     return root->height;
@@ -160,7 +160,7 @@ private:
     this->DeleteTree();
 
     this->root = this->BuildBST(result, result->size() - 1);
-    this->CalulateHeight(this->root);
+    this->CalculateHeight(this->root);
 
     delete result;
   }
@@ -393,22 +393,6 @@ private:
 
   void RotateLeft(TreeNode<DataType> *&root)
   {
-    cout << "Entered in RotateLeft Function" << endl;
-    TreeNode<DataType> *leftChild = root->left;
-    TreeNode<DataType> *rightChild = leftChild->right;
-
-    leftChild->right = root;
-    root->left = rightChild;
-
-    root->height = max(this->GetHeight(root->left), this->GetHeight(root->right)) + 1;
-    leftChild->height = max(this->GetHeight(leftChild->left), this->GetHeight(leftChild->right)) + 1;
-
-    root = leftChild;
-  }
-
-  void RotateRight(TreeNode<DataType> *&root)
-  {
-    cout << "Entered in RotateRight Function" << endl;
     TreeNode<DataType> *rightChild = root->right;
     TreeNode<DataType> *leftChild = rightChild->left;
 
@@ -419,6 +403,20 @@ private:
     rightChild->height = max(this->GetHeight(rightChild->left), this->GetHeight(rightChild->right)) + 1;
 
     root = rightChild;
+  }
+
+  void RotateRight(TreeNode<DataType> *&root)
+  {
+    TreeNode<DataType> *leftChild = root->left;
+    TreeNode<DataType> *rightChild = leftChild->right;
+
+    leftChild->right = root;
+    root->left = rightChild;
+
+    root->height = max(this->GetHeight(root->left), this->GetHeight(root->right)) + 1;
+    leftChild->height = max(this->GetHeight(leftChild->left), this->GetHeight(leftChild->right)) + 1;
+
+    root = leftChild;
   }
 
   int GetHeight(TreeNode<DataType> *root)
@@ -441,22 +439,23 @@ private:
     return (this->GetHeight(root->left) - this->GetHeight(root->right));
   }
 
-  void BalanceTree(TreeNode<DataType> *&root, DataType value)
+  void BalanceTree(TreeNode<DataType> *&root)
   {
     int balance = this->GetBalance(root);
-    cout << "Balance Calculated: " << balance << endl;
-    this->LevelOrderTraversal();
+    // this->LevelOrderTraversal();
 
     // if balance >= -1 && balance <= 1 :-> Tree or SubTree is balanced
+
+    // left heavy
     if (balance > 1)
     {
-      if (value < root->left->value)
+      if ((this->GetHeight(root->left->left) - this->GetHeight(root->left->right)) > 0)
       {
         // LL Case hold here
         this->RotateRight(root);
       }
 
-      if (value > root->left->value)
+      else if ((this->GetHeight(root->left->left) - this->GetHeight(root->left->right)) < 0)
       {
         // LR Case hold here
         this->RotateLeft(root->left);
@@ -464,15 +463,16 @@ private:
       }
     }
 
-    if (balance < -1)
+    // right heavy
+    else if (balance < -1)
     {
-      if (value > root->right->value)
+      if ((this->GetHeight(root->right->left) - this->GetHeight(root->right->right)) < 0)
       {
         // RR Case hold here
         this->RotateLeft(root);
       }
 
-      if (value < root->right->value)
+      else if ((this->GetHeight(root->right->left) - this->GetHeight(root->right->right)) > 0)
       {
         // RL Case hold here
         this->RotateRight(root->right);
@@ -481,11 +481,20 @@ private:
     }
   }
 
+  DataType FindMaximumFromLeft(TreeNode<DataType> *root)
+  {
+    if (root->right == NULL)
+    {
+      return root->value;
+    }
+
+    return this->FindMaximumFromLeft(root->right);
+  }
+
   void InsertNode(TreeNode<DataType> *&root, DataType value)
   {
     if (root == NULL)
     {
-      cout << "Node Inserted at right place" << endl;
       root = new TreeNode<DataType>(value);
       return;
     }
@@ -505,14 +514,87 @@ private:
     }
 
     root->height = max(this->GetHeight(root->left), this->GetHeight(root->right)) + 1;
-    cout << "Root Height Calculated: " << root->height << endl;
-    this->BalanceTree(root, value);
+    this->BalanceTree(root);
+  }
+
+  TreeNode<DataType> *DeleteNode(TreeNode<DataType> *root, DataType value)
+  {
+    if (root == NULL)
+    {
+      return NULL;
+    }
+
+    if (root->value == value)
+    {
+      if (root->left == NULL && root->right == NULL)
+      {
+        delete root;
+        return NULL;
+      }
+      else if (root->left != NULL && root->right == NULL)
+      {
+        TreeNode<DataType> *left = root->left;
+        delete root;
+        return left;
+      }
+      else if (root->left == NULL && root->right != NULL)
+      {
+        TreeNode<DataType> *right = root->right;
+        delete root;
+        return right;
+      }
+      else
+      {
+        // here find maximum from left subtree or minimum from right subtree
+        root->value = this->FindMaximumFromLeft(root->left);
+        root->left = this->DeleteNode(root->left, root->value);
+      }
+    }
+    else if (root->value > value)
+    {
+      root->left = this->DeleteNode(root->left, value);
+    }
+    else
+    {
+      root->right = this->DeleteNode(root->right, value);
+    }
+
+    root->height = max(this->GetHeight(root->left), this->GetHeight(root->right)) + 1;
+    this->BalanceTree(root);
+    return root;
+  }
+
+  TreeNode<DataType> *SearchNode(TreeNode<DataType> *root, DataType value)
+  {
+    if (root == NULL)
+    {
+      return NULL;
+    }
+
+    if (root->value == value)
+    {
+      return root;
+    }
+    else if (root->value > value)
+    {
+      root = this->SearchNode(root->left, value);
+    }
+    else
+    {
+      root = this->SearchNode(root->right, value);
+    }
+
+    return root;
   }
 
 public:
   AVLTree() { this->root = NULL; }
 
-  ~AVLTree() { this->root = NULL; }
+  ~AVLTree()
+  {
+    this->DeleteTree();
+    this->root = NULL;
+  }
 
   void GenerateBinaryTree()
   {
@@ -568,9 +650,14 @@ public:
     }
   }
 
-  void insert(DataType value)
+  void InsertData(DataType value)
   {
     this->InsertNode(this->root, value);
+  }
+
+  void DeleteData(DataType value)
+  {
+    this->DeleteNode(this->root, value);
   }
 
   int BinaryTreeHeight(TreeNode<DataType> *root)
@@ -619,6 +706,27 @@ public:
     return this->CheckBST(this->root);
   }
 
+  bool SearchData(DataType value)
+  {
+    TreeNode<DataType> *founded = this->SearchNode(this->root, value);
+    if (founded == NULL)
+    {
+      return false;
+    }
+
+    return true;
+  }
+
+  void clear()
+  {
+    if (this->root == NULL)
+    {
+      return;
+    }
+
+    this->DeleteTree();
+  }
+
   TreeNode<DataType> *ReturnRoot() { return this->root; }
 
   void PreOrderTraversal() { this->PreOrder(this->root); }
@@ -641,6 +749,10 @@ public:
 
 // int main()
 // {
-
-//     return 0;
+//   AVLTree<int> tree;
+//   tree.GenerateBinarySearchTree();
+//   tree.LevelOrderTraversal();
+//   tree.DeleteData(35);
+//   tree.LevelOrderTraversal();
+//   return 0;
 // }

@@ -1,4 +1,5 @@
 #include "Triplet.cpp"
+#include "../Return-Nothing/ReturnNothing.cpp"
 #include <iostream>
 #include <list>
 #include <queue>
@@ -17,6 +18,7 @@ private:
   unordered_map<DataType, list<pair<DataType, int>>> AdjacencyList;
   unordered_map<DataType, bool> Components;
   unordered_map<DataType, int> InDegree;
+  ReturnNothing<DataType> DefaultValues;
   vector<DataType> Keys;
   int Nodes;
   int Edges;
@@ -340,7 +342,7 @@ private:
     }
   }
 
-  // desgined for main datatypes only like: int, char, string
+  // designed for main datatypes only like: int, char, string
   bool UndirectedCycleBFS(unordered_map<DataType, bool> &visited,
                           DataType key)
   {
@@ -513,6 +515,7 @@ private:
 
     DataType source, destination;
     int weight;
+    // Relax all edges V - 1 times
     for (int i = 0; i < this->Nodes; i++)
     {
       for (auto it = this->AdjacencyList.begin(); it != this->AdjacencyList.end(); it++)
@@ -523,7 +526,7 @@ private:
           destination = i.first;
           weight = i.second;
 
-          if ((distance[source] + weight) < distance[destination])
+          if (distance[source] != INT_MAX && (distance[source] + weight) < distance[destination])
           {
             distance[destination] = distance[source] + weight;
           }
@@ -532,6 +535,7 @@ private:
     }
   }
 
+  // Finding Bridges in the graph
   void FindBridge(unordered_map<DataType, int> &discovery, unordered_map<DataType, int> &low, DataType parent, unordered_map<DataType, bool> &visited, vector<pair<DataType, DataType>> &bridges, DataType key, int time = 0)
   {
     discovery[key] = time;
@@ -568,6 +572,7 @@ private:
     }
   }
 
+  // Finding Articulation points in the graph
   void FindArticulationPoint(unordered_map<DataType, int> &discovery, unordered_map<DataType, int> &low, DataType parent, unordered_map<DataType, bool> &visited, vector<DataType> &articulationPoint, unordered_map<DataType, bool> &parentExistance, DataType key, int time = 0)
   {
     discovery[key] = time;
@@ -616,6 +621,165 @@ private:
     if (!parentExistance[key] && childCount > 1)
     {
       articulationPoint.push_back(key);
+    }
+  }
+
+  // Prim's Algorithm starts here
+  void DistanceDefaultInitialization(unordered_map<DataType, int> &distance)
+  {
+    for (int i = 0; i < this->Nodes; i++)
+    {
+      distance[this->Keys[i]] = INT_MAX;
+    }
+  }
+
+  // less efficient, more efficient approach is using min-heap
+  // mst is passed by reference because by using this variable we will return the MST values
+  void FindMSTPrimsAlgorithm(DataType src, unordered_map<DataType, pair<DataType, int>> &mst)
+  {
+    unordered_map<DataType, int> distance;
+
+    // initializing with default values in distance
+    DistanceDefaultInitialization(distance);
+
+    unordered_map<DataType, bool> visited;
+    unordered_map<DataType, DataType> parent;
+
+    DataType key;
+    list<pair<DataType, int>> paths;
+
+    distance[src] = 0;
+    parent[src] = DefaultValues.DefaultValue();
+
+    for (int i = 0; i < this->Nodes; i++)
+    {
+      key = this->Keys[i];
+      paths = this->AdjacencyList[key];
+
+      for (auto i : paths)
+      {
+        // Don't need to update the src distance
+        if (i.first == src)
+        {
+          continue;
+        }
+
+        if (distance[i.first] > i.second)
+        {
+          distance[i.first] = i.second;
+          parent[i.first] = key;
+        }
+      }
+    }
+
+    // Constructing MST from distance and parent array
+    for (auto it = parent.begin(); it != parent.end(); it++)
+    {
+      if (it->first == src)
+      {
+        continue;
+      }
+
+      mst[it->second] = make_pair(it->first, distance[it->first]);
+    }
+  }
+
+  // Kruskal's Algorithm starts here
+  // We use two concepts here, 1): Union by Rank; 2): Path Compression
+
+  // Try to understand it
+  DataType FindParent(DataType node, unordered_map<DataType, DataType> &parent)
+  {
+    if (parent[node] == node)
+    {
+      return node;
+    }
+
+    return parent[node] = this->FindParent(parent[node], parent);
+  }
+
+  void UnionSet(unordered_map<DataType, int> &rank, unordered_map<DataType, DataType> &parent, DataType u, DataType v)
+  {
+    if (!(this->KeyCheck(u) && this->KeyCheck(v)))
+    {
+      return;
+    }
+
+    DataType uParent = this->FindParent(u, parent);
+    DataType vParent = this->FindParent(v, parent);
+
+    if (rank[uParent] < rank[vParent])
+    {
+      parent[uParent] = vParent;
+    }
+    else if (rank[uParent] > rank[vParent])
+    {
+      parent[vParent] = uParent;
+    }
+    else
+    {
+      parent[uParent] = vParent;
+      rank[vParent]++;
+    }
+  }
+
+  // this function will help to detect and not merge those two vertices which can create cycle while adding vertices in MST
+  bool isSameComponent(DataType u, DataType v)
+  {
+    DataType uParent = this->FindParent(u);
+    DataType vParent = this->FindParent(v);
+
+    return (uParent == vParent);
+  }
+
+  void RankAndParentDefaultInitialization(unordered_map<DataType, int> &rank, unordered_map<DataType, DataType> &parent)
+  {
+    for (int i = 0; i < this->Nodes; i++)
+    {
+      rank[this->Keys[i]] = 0;
+      parent[this->Keys[i]] = this->Keys[i];
+    }
+  }
+
+  bool GraphVectorComparator(triplet<DataType, DataType, int> e1, triplet<DataType, DataType, int> e2){
+    return (e1.third < e2.third);
+  }
+
+  void FindMSTKruskalsAlgorithm(unordered_map<DataType, list<pair<DataType, int>>> &mst)
+  {
+    unordered_map<DataType, int> rank;
+    unordered_map<DataType, DataType> parent;
+
+    this->RankAndParentDefaultInitialization(rank, parent);
+
+    // format is u, v, w
+    vector<triplet<DataType, DataType, int>> edgesContainer;
+    DataType key;
+    list<pair<DataType, int>> paths;
+
+    // no need to do this if graph is stored in form of adjacency matrix and not adjacency list
+    // because here we need a linear data structure
+    int edgesContainerSize = 0;
+    for(int i=0;i<this->Nodes;i++){
+      key = this->Keys[i];
+      paths = this->AdjacencyList[key];
+
+      for(auto i: paths){
+        edgesContainer[edgesContainerSize].make_triplet(key, i.first, i.second);
+        edgesContainerSize++;
+      }
+    }
+
+    sort(edgesContainer.begin(), edgesContainer.end(), this->GraphVectorComparator);
+
+    triplet<DataType, DataType, int> element;
+    for(int i=0;i<edgesContainerSize;i++){
+      element = edgesContainer[i];
+
+      if(!this->isSameComponent(element.first, element.second)){
+        this->UnionSet(rank, parent, element.first, element.second);
+        mst[element.first].push_back(make_pair(element.second, element.third));
+      }
     }
   }
 
@@ -924,8 +1088,9 @@ public:
 
   void printArticulationPoints(vector<DataType> answer)
   {
-    if(answer.empty()){
-      cout<<"No Articulation Point Exist's in the Graph"<<endl;
+    if (answer.empty())
+    {
+      cout << "No Articulation Point Exist's in the Graph" << endl;
       return;
     }
 
@@ -939,8 +1104,9 @@ public:
 
   void printBridges(vector<pair<DataType, DataType>> answer)
   {
-    if(answer.empty()){
-      cout<<"No Bridge Exist's in the Graph"<<endl;
+    if (answer.empty())
+    {
+      cout << "No Bridge Exist's in the Graph" << endl;
       return;
     }
 
@@ -963,12 +1129,18 @@ public:
     cout << "SRC: " << src << endl;
     for (auto it = distance.begin(); it != distance.end(); it++)
     {
-      cout << "\"" <<it->first << ": " << it->second << "\", ";
+      cout << "\"" << it->first << ": " << it->second << "\", ";
     }
   }
 
   unordered_map<DataType, int> BellmanfordShortestPath(DataType src)
   {
+    if (!this->WeightedGraph)
+    {
+      cout << "Not a Weighted Graph!" << endl;
+      return unordered_map<DataType, int>();
+    }
+
     unordered_map<DataType, int> distance;
 
     if (!this->KeyCheck(src))
@@ -990,6 +1162,12 @@ public:
 
   bool NegativeCycleDetection(DataType src)
   {
+    if (!this->WeightedGraph)
+    {
+      cout << "Not a Weighted Graph!" << endl;
+      return false;
+    }
+
     unordered_map<DataType, int> distance;
 
     for (auto key : this->Keys)
@@ -1067,6 +1245,12 @@ public:
   // analyze visited node tracking in dijkstra's algorithm
   vector<DataType> UndirectedGraphShortestPath(DataType source, DataType destination)
   {
+    if (!this->WeightedGraph)
+    {
+      cout << "Not a Weighted Graph!" << endl;
+      return vector<DataType>();
+    }
+
     unordered_map<DataType, bool> visited;
     vector<DataType> distance;
     unordered_map<DataType, DataType> nodeToParent;
@@ -1096,6 +1280,12 @@ public:
   // can only applied on Directed Acyclic Graph (DAG)
   unordered_map<DataType, int> DirectedGraphShortestPath(DataType source)
   {
+    if (!this->WeightedGraph)
+    {
+      cout << "Not a Weighted Graph!" << endl;
+      return unordered_map<DataType, int>();
+    }
+
     unordered_map<DataType, int> distance;
 
     if (!this->KeyCheck(source))
@@ -1146,6 +1336,12 @@ public:
 
   unordered_map<DataType, int> SingleSourceShortestPath(DataType source)
   {
+    if (!this->WeightedGraph)
+    {
+      cout << "Not a Weighted Graph!" << endl;
+      return unordered_map<DataType, int>();
+    }
+
     unordered_map<DataType, int> distance;
 
     if (!this->KeyCheck(source))
@@ -1165,6 +1361,19 @@ public:
     this->DijkstrasAlgorithm(source, distance);
 
     return distance;
+  }
+
+  unordered_map<DataType, unordered_map<DataType, int>> AllPairShortestPath()
+  {
+    if (!this->WeightedGraph)
+    {
+      cout << "Not a Weighted Graph!" << endl;
+      return unordered_map<DataType, unordered_map<DataType, int>>();
+    }
+
+    unordered_map<DataType, unordered_map<DataType, int>> distance;
+
+    list<DataType, int> container;
   }
 
   int nodes() { return this->Nodes; }

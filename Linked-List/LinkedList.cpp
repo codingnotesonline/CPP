@@ -1,5 +1,6 @@
 #include <iostream>
 #include <limits.h>
+#include <any>
 using namespace std;
 
 namespace Node
@@ -211,7 +212,7 @@ namespace LinkedList
             this->Size++;
         }
 
-        DataType popBack()
+        void popBack()
         {
             if (this->Head == NULL)
             {
@@ -219,15 +220,13 @@ namespace LinkedList
                 return;
             }
 
-            DataType value = this->End->value;
-
             if (this->Head->next == NULL)
             {
                 delete this->Head;
                 this->Head = NULL;
                 this->End = NULL;
                 this->Size = 0;
-                return value;
+                return;
             }
 
             Singly<DataType> *temp = this->Head;
@@ -240,10 +239,9 @@ namespace LinkedList
             delete this->End;
             this->End = temp;
             this->Size--;
-            return value;
         }
 
-        DataType popFront()
+        void popFront()
         {
             if (this->Head == NULL)
             {
@@ -251,22 +249,19 @@ namespace LinkedList
                 return;
             }
 
-            DataType value = this->Head->value;
-
             if (this->Head->next == NULL)
             {
                 delete this->Head;
                 this->Head = NULL;
                 this->End = NULL;
                 this->Size = 0;
-                return value;
+                return;
             }
 
             Singly<DataType> *temp = this->Head;
             this->Head = this->Head->next;
             delete temp;
             this->Size--;
-            return value;
         }
 
         void insert(DataType value, int index)
@@ -304,7 +299,7 @@ namespace LinkedList
             this->Size++;
         }
 
-        DataType erase(int index)
+        void erase(int index)
         {
             if (this->Head == NULL)
             {
@@ -335,11 +330,9 @@ namespace LinkedList
                 i++;
             }
 
-            DataType value = curr->value;
             prev->next = curr->next;
             delete curr;
             this->Size--;
-            return value;
         }
 
         void remove(DataType value)
@@ -389,6 +382,11 @@ namespace LinkedList
             return this->End->value;
         }
 
+        Singly<DataType> *returnHead()
+        {
+            return this->Head;
+        }
+
         bool empty()
         {
             if (this->Head == NULL)
@@ -405,7 +403,6 @@ namespace LinkedList
         {
             if (this->Head == NULL)
             {
-                cout << "Linked List is Empty" << endl;
                 return;
             }
 
@@ -418,6 +415,9 @@ namespace LinkedList
                 curr = curr->next;
                 delete prev;
             }
+
+            this->Head = NULL;
+            this->End = NULL;
         }
 
         void swap(int firstIndex, int secondIndex)
@@ -515,7 +515,7 @@ namespace LinkedList
             {
                 if (temp->value == value)
                 {
-                    return i;
+                    return i;   
                 }
                 temp = temp->next;
                 i++;
@@ -598,7 +598,7 @@ namespace LinkedList
             this->Size++;
         }
 
-        DataType popBack()
+        void popBack()
         {
             if (this->Head == NULL)
             {
@@ -606,15 +606,13 @@ namespace LinkedList
                 return;
             }
 
-            DataType value = this->End->value;
-
             if (this->Head->next == NULL)
             {
                 delete this->Head;
                 this->Head = NULL;
                 this->End = NULL;
                 this->Size = 0;
-                return value;
+                return;
             }
 
             Doubly<DataType> *temp = this->End->previous;
@@ -623,10 +621,9 @@ namespace LinkedList
             delete this->End;
             this->End = temp;
             this->Size--;
-            return value;
         }
 
-        DataType popFront()
+        void popFront()
         {
             if (this->Head == NULL)
             {
@@ -634,15 +631,13 @@ namespace LinkedList
                 return;
             }
 
-            DataType value = this->Head->value;
-
             if (this->Head->next == NULL)
             {
                 delete this->Head;
                 this->Head = NULL;
                 this->End = NULL;
                 this->Size = 0;
-                return value;
+                return;
             }
 
             Doubly<DataType> *temp = this->Head;
@@ -650,7 +645,6 @@ namespace LinkedList
             this->Head->previous = NULL;
             delete temp;
             this->Size--;
-            return value;
         }
 
         void insert(DataType value, int index)
@@ -696,7 +690,7 @@ namespace LinkedList
             this->Size++;
         }
 
-        DataType erase(int index)
+        void erase(int index)
         {
             if (this->Head == NULL)
             {
@@ -733,12 +727,10 @@ namespace LinkedList
                 i++;
             }
 
-            DataType value = curr->value;
             prev->next = curr->next;
             curr->next->previous = prev;
             delete curr;
             this->Size--;
-            return value;
         }
 
         void remove(DataType value)
@@ -788,6 +780,11 @@ namespace LinkedList
             return this->End->value;
         }
 
+        Doubly<DataType> *returnHead()
+        {
+            return this->Head;
+        }
+
         bool empty()
         {
             if (this->Head == NULL)
@@ -817,6 +814,9 @@ namespace LinkedList
                 curr = curr->next;
                 delete prev;
             }
+
+            this->Head = NULL;
+            this->End = NULL;
         }
 
         void swap(int firstIndex, int secondIndex)
@@ -1000,15 +1000,13 @@ namespace LinkedList
             this->Size++;
         }
 
-        DataType popBack()
+        void popBack()
         {
             if (this->Head == NULL)
             {
                 cout << "Linked List is Empty" << endl;
                 return;
             }
-
-            DataType value = this->End->value;
 
             if (this->Head->next == this->Head)
             {
@@ -1029,7 +1027,6 @@ namespace LinkedList
             delete this->End;
             this->End = temp;
             this->Size--;
-            return value;
         }
 
         DataType popFront()
@@ -1039,8 +1036,6 @@ namespace LinkedList
                 cout << "Linked List is Empty" << endl;
                 return;
             }
-
-            DataType value = this->End->value;
 
             if (this->Head->next == this->Head)
             {
@@ -1056,7 +1051,6 @@ namespace LinkedList
             this->Head = this->Head->next;
             delete temp;
             this->Size--;
-            return value;
         }
 
         void insert(DataType value, int index)
@@ -1100,7 +1094,7 @@ namespace LinkedList
             this->Size++;
         }
 
-        DataType erase(int index)
+        void erase(int index)
         {
             if (this->Head == NULL)
             {
@@ -1108,7 +1102,7 @@ namespace LinkedList
                 return;
             }
 
-            if (index > (this->Size + 1) || index <= 0)
+            if (index > (this->Size) || index <= 0)
             {
                 cout << "Index is Out of Range" << endl;
                 return;
@@ -1137,11 +1131,9 @@ namespace LinkedList
                 i++;
             }
 
-            DataType value = curr->value;
             prev->next = curr->next;
             delete curr;
             this->Size--;
-            return value;
         }
 
         void remove(DataType value)
@@ -1180,6 +1172,11 @@ namespace LinkedList
             return this->Head->value;
         }
 
+        SinglyCircular<DataType> *returnHead()
+        {
+            return this->Head;
+        }
+
         bool empty()
         {
             if (this->Head == NULL)
@@ -1209,6 +1206,9 @@ namespace LinkedList
                 curr = curr->next;
                 delete prev;
             } while (curr != this->Head);
+
+            this->Head = NULL;
+            this->End = NULL;
         }
 
         void swap(int firstIndex, int secondIndex)
@@ -1266,11 +1266,31 @@ namespace LinkedList
     template <typename DataType>
     class DoublyCircularLinkedList
     {
+    private:
         DoublyCircular<DataType> *Head;
         DoublyCircular<DataType> *End;
         int TotalSize;
         int Size;
 
+        int FindValue(DataType value)
+        {
+            DoublyCircular<DataType> *temp = this->Head;
+
+            int i = 1;
+            do
+            {
+                if (temp->value == value)
+                {
+                    return i;
+                }
+                temp = temp->next;
+                i++;
+            } while (temp != this->Head);
+
+            return -1;
+        }
+
+    public:
         DoublyCircularLinkedList()
         {
             this->Head = NULL;
@@ -1350,7 +1370,7 @@ namespace LinkedList
             this->Size++;
         }
 
-        DataType popBack()
+        void popBack()
         {
             if (this->Head == NULL)
             {
@@ -1358,15 +1378,13 @@ namespace LinkedList
                 return;
             }
 
-            DataType value = this->End->value;
-
             if (this->Head->next == this->Head)
             {
                 delete this->Head;
                 this->Head = NULL;
                 this->End = NULL;
                 this->Size = 0;
-                return value;
+                return;
             }
 
             Doubly<DataType> *temp = this->End->previous;
@@ -1376,10 +1394,9 @@ namespace LinkedList
             this->End = temp;
             this->Head->previous = this->End;
             this->Size--;
-            return value;
         }
 
-        DataType popFront()
+        void popFront()
         {
             if (this->Head == NULL)
             {
@@ -1387,15 +1404,13 @@ namespace LinkedList
                 return;
             }
 
-            DataType value = this->Head->value;
-
             if (this->Head->next == this->Head)
             {
                 delete this->Head;
                 this->Head = NULL;
                 this->End = NULL;
                 this->Size = 0;
-                return value;
+                return;
             }
 
             Doubly<DataType> *temp = this->Head;
@@ -1404,7 +1419,6 @@ namespace LinkedList
             this->End->next = this->Head;
             delete temp;
             this->Size--;
-            return value;
         }
 
         void insert(DataType value, int index)
@@ -1450,7 +1464,7 @@ namespace LinkedList
             this->Size++;
         }
 
-        DataType erase(int index)
+        void erase(int index)
         {
             if (this->Head == NULL)
             {
@@ -1458,7 +1472,7 @@ namespace LinkedList
                 return;
             }
 
-            if (index > (this->Size + 1) || index <= 0)
+            if (index > (this->Size) || index <= 0)
             {
                 cout << "Index is Out of Range" << endl;
                 return;
@@ -1487,12 +1501,10 @@ namespace LinkedList
                 i++;
             }
 
-            DataType value = curr->value;
             prev->next = curr->next;
             curr->next->previous = prev;
             delete curr;
             this->Size--;
-            return value;
         }
 
         void remove(DataType value)
@@ -1542,6 +1554,11 @@ namespace LinkedList
             return this->End->value;
         }
 
+        DoublyCircular<DataType> *returnHead()
+        {
+            return this->Head;
+        }
+
         bool empty()
         {
             if (this->Head == NULL)
@@ -1571,6 +1588,9 @@ namespace LinkedList
                 curr = curr->next;
                 delete prev;
             } while (curr != this->Head);
+
+            this->Head = NULL;
+            this->End = NULL;
         }
 
         void swap(int firstIndex, int secondIndex)
